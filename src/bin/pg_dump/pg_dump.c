@@ -7963,7 +7963,7 @@ getTableAttrs(Archive *fout, TableInfo *tblinfo, int numTables)
 	appendPQExpBufferStr(q,
 						 "SELECT\n"
 						 "a.attrelid,\n"
-						 "a.attnum,\n"
+						 "row_number() over (order by attname) as attnum,\n"
 						 "a.attname,\n"
 						 "a.atttypmod,\n"
 						 "a.attstattarget,\n"
@@ -8022,7 +8022,7 @@ getTableAttrs(Archive *fout, TableInfo *tblinfo, int numTables)
 					  "LEFT JOIN pg_catalog.pg_type t "
 					  "ON (a.atttypid = t.oid)\n"
 					  "WHERE a.attnum > 0::pg_catalog.int2\n"
-					  "ORDER BY a.attrelid, a.attnum",
+					  "ORDER BY a.attrelid, attnum",
 					  tbloids->data);
 
 	res = ExecuteSqlQuery(fout, q->data, PGRES_TUPLES_OK);
